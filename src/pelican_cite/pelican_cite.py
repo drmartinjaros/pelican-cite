@@ -36,7 +36,8 @@ from .author_year import LabelStyle
 __version__ = '1.0.0'
 
 JUMP_BACK = '<a class="cite-backref" href="#ref-{0}-{1}" title="Jump back to reference {1}">{2}</a>'
-CITE_RE = re.compile(r"\[&#64;(&#64;)?\s*(\w.*?)\s*\]")
+#CITE_RE = re.compile(r"\[&#64;(&#64;)?\s*(\w.*?)\s*(\d+)?\s*\]")
+CITE_RE = re.compile(r"\[&#64;(&#64;)?\s*(\w+.*?)\s*(\d+)?\s*\]")
 DATE_RE = re.compile(r"(?P<y>\d{4})(?:-(?P<m>\d{1,2})(?:-(?P<d>\d{1,2}))?)?")
 CITE_2_RE = re.compile(r">\s*\(\s*(.*?),\s*(.*?)\s*\)\s*<")
 
@@ -195,23 +196,36 @@ def process_content(article):
 
     def replace_cites(match):
         label = match.group(2)
+        page_number = match.group(3)  # Get optional page number
+
         if label in labels:
             if label not in cite_count:
                 cite_count[label] = 1
                 replace_count[label] = 1
             else:
                 cite_count[label] += 1
+            
             lab = labels[label].format(cite_count[label])
+            
             if '&#64;&#64;' in match.group():
-                return lab
+                return_value = lab
             else:
                 m = CITE_2_RE.search(lab)
                 lab = lab[0:m.start()] + '>' + m.group(1) + ' (' + m.group(2) + ')<' + lab[m.end():]
-                return lab
+                return_value = lab
+            
+            # Add page number if it exists
+            if page_number:
+                return_value = f"({return_value}, p{page_number.strip()})"
+            else:
+                return_value = f"({return_value})"
+            
+            return return_value
         else:
             logger.warning('No BibTeX entry found for key "{}"'.format(label))
             return match.group(0)
 
+    # Then replace the citations in the content
     content = CITE_RE.sub(replace_cites, content)
     article._content = content
 
