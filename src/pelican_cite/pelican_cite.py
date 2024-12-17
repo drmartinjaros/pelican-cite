@@ -211,7 +211,7 @@ def process_content(article):
                 return_value = lab
             else:
                 m = CITE_2_RE.search(lab)
-                lab = lab[0:m.start()] + '>' + m.group(1) + ' (' + m.group(2) + ')<' + lab[m.end():]
+                lab = lab[0:m.start()] + '>' + m.group(1) + ' ' + m.group(2) + ' <' + lab[m.end():]
                 return_value = lab
             
             # Add page number if it exists
