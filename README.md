@@ -1,5 +1,16 @@
-pelican-cite
-==============
+# Pelican Cite Fork
+A fork of the Pelican Cite plugin that adds support for page optional numbers in citations, enhancing the citation formatting capabilities within Pelican sites.
+
+## Features
+- Support for page numbers in citations.
+- Improved citation formatting for better readability.
+- Maintains compatibility with existing citation styles.
+
+## Usage
+To cite a source with a page number, use the following format in your content:
+
+For example:
+[@author_title_year 81]
 
 Allows the use of BibTeX citations within a Pelican site. 
 
